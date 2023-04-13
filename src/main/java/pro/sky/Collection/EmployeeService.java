@@ -5,12 +5,11 @@ import pro.sky.Collection.exception.EmployeeAlreadyAddedException;
 import pro.sky.Collection.exception.EmployeeNotFoundException;
 import pro.sky.Collection.exception.EmployeeStorageIsFullException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 @Service
 public class EmployeeService {
-    private List<Employee> employees = new ArrayList<> (
+/*    private List<Employee> employees = new ArrayList<> (
             List.of(
                     new Employee("Ivanov", "Ivan"),
                     new Employee("Petrov", "Petr"),
@@ -23,40 +22,46 @@ public class EmployeeService {
                     new Employee("Simakov", "Vladimir"),
                     new Employee("Degtyarev", "Ivan")
             )
+    );*/
+
+    private Map<String, Employee> employees = new HashMap<>(
+            Map.of("Ivanov Ivan", new Employee("Ivanov", "Ivan"),
+                    "Petrov Petr", new Employee("Petrov", "Petr"),
+                    "Sidorov Sidor", new Employee("Sidorov", "Sidor")
+            )
     );
 
-    public Employee addEmployee (String lastName, String firstName) {
-        for (Employee employee : employees) {
-            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
-                throw new EmployeeAlreadyAddedException();
-            }
-        }
-        if (employees.size()>100) {
-            throw new EmployeeStorageIsFullException();
+    public Employee addEmployee(String lastName, String firstName) {
+        String fullName = lastName + " " + firstName;
+        if (employees.containsKey(fullName)) {
+            throw new EmployeeAlreadyAddedException();
         }
         Employee e = new Employee(lastName, firstName);
-        employees.add(e);
+        employees.put(fullName, e);
         return e;
     }
-    public Employee removeEmployee (String lastName, String firstName) {
-        for (Employee employee : employees) {
-            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
-                employees.remove(employee);
-                return employee;
-            }
+
+    public Employee removeEmployee(String lastName, String firstName) {
+        String fullName = lastName + " " + firstName;
+        Employee e = new Employee(lastName, firstName);
+        if (employees.containsKey(fullName)) {
+            employees.remove(fullName);
+            return e;
         }
         throw new EmployeeNotFoundException();
     }
-    public Employee findEmployee (String lastName, String firstName) {
-        for (Employee employee : employees) {
-            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
-                return employee;
-            }
+
+    public Employee findEmployee(String lastName, String firstName) {
+        String fullName = lastName + " " + firstName;
+        Employee e = new Employee(lastName, firstName);
+        if (employees.containsKey(fullName)) {
+            return e;
         }
         throw new EmployeeNotFoundException();
     }
+
     public Collection<Employee> returnAll() {
-        return employees;
+        return employees.values();
     }
 
 }
