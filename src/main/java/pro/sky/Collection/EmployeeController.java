@@ -4,9 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/departments")
 public class EmployeeController {
     private final EmployeeService es;
 
@@ -14,21 +15,21 @@ public class EmployeeController {
         this.es = es;
     }
     @ResponseStatus(HttpStatus.CREATED)
-    @GetMapping ("/add")
-    public Employee add (@RequestParam ("firstName") String firstName,@RequestParam ("lastName") String lastName) {
-        return es.addEmployee(lastName,firstName);
+    @GetMapping ("/min-salary")
+    public List<Employee> findMinSalary (@RequestParam ("departmentId") int departmentId) {
+        return es.findMinSalary(departmentId);
     }
-    @GetMapping ("/remove")
-    public Employee remove (@RequestParam ("firstName") String firstName, @RequestParam ("lastName") String lastName) {
-        return es.removeEmployee(lastName,firstName);
+    @GetMapping ("/max-salary")
+    public List<Employee> findMaxSalary (@RequestParam ("departmentId") int departmentId) {
+        return es.findMaxSalary(departmentId);
     }
-    @GetMapping ("/find")
-    public Employee find (@RequestParam ("firstName") String firstName, @RequestParam ("lastName") String lastName) {
-        return es.findEmployee(lastName,firstName);
+    @GetMapping(value = "/all", params = {"departmentId"})
+    public List<Employee> findAllEmpByDepart (@RequestParam ("departmentId") int departmentId) {
+        return es.empDepartExtract(departmentId);
     }
-    @GetMapping ("/returnAll")
-    public Collection<Employee> returnAll () {
-        return es.returnAll();
+    @GetMapping ("/all")
+    public Collection<Employee> all () {
+        return es.printAllByDepart();
     }
 
 }

@@ -5,64 +5,59 @@ import pro.sky.Collection.exception.EmployeeAlreadyAddedException;
 import pro.sky.Collection.exception.EmployeeNotFoundException;
 import pro.sky.Collection.exception.EmployeeStorageIsFullException;
 
+import javax.print.attribute.IntegerSyntax;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
-/*    private List<Employee> employees = new ArrayList<> (
-            List.of(
-                    new Employee("Ivanov", "Ivan"),
-                    new Employee("Petrov", "Petr"),
-                    new Employee("Sidorov", "Sidor"),
-                    new Employee("Shevnin", "Sergey"),
-                    new Employee("Nesterova", "Olga"),
-                    new Employee("Isupova", "Ekaterina"),
-                    new Employee("Zhdanova", "Olga"),
-                    new Employee("Luginina", "Ann"),
-                    new Employee("Simakov", "Vladimir"),
-                    new Employee("Degtyarev", "Ivan")
-            )
-    );*/
+    private List<Employee> employees = new ArrayList<>(
+            List.of(new Employee("Ivanov", "Ivan", 1, 10000),
+                    new Employee("Petrov", "Petr", 3, 34734),
+                    new Employee("Sidorov", "Sidor", 1, 45833),
+                    new Employee("Shevnin", "Sergey", 4, 49321),
+                    new Employee("Nesterova", "Olga", 2, 72882),
+                    new Employee("Isupova", "Ekaterina", 3, 38932),
+                    new Employee("Zhdanova", "Olga",4, 24942),
+                    new Employee("Luginina", "Ann", 3, 98352),
+                    new Employee("Simakov", "Vladimir", 2, 195935),
+                    new Employee("Degtyarev", "Ivan", 5, 632858)
+            ));
 
-    private Map<String, Employee> employees = new HashMap<>(
-            Map.of("Ivanov Ivan", new Employee("Ivanov", "Ivan"),
-                    "Petrov Petr", new Employee("Petrov", "Petr"),
-                    "Sidorov Sidor", new Employee("Sidorov", "Sidor")
-            )
-    );
+    public List<Employee> empDepartExtract(int departmentId) {
+        return employees.stream()
+                .filter(e -> e.getDepartment() == departmentId)
+                .collect(Collectors.toList());
+    }
 
-    public Employee addEmployee(String lastName, String firstName) {
-        String fullName = lastName + " " + firstName;
-        if (employees.containsKey(fullName)) {
-            throw new EmployeeAlreadyAddedException();
+    public List<Employee> printAllByDepart() {
+        List<Employee> l = new ArrayList<>();
+        HashSet<Integer> s = new HashSet<>(
+                employees.stream()
+                        .map(e -> e.getDepartment())
+                        .collect(Collectors.toList())
+                );
+        s.stream().sorted();
+        for (Integer dep : s) {
+            l.addAll(employees.stream()
+                    .filter(e -> e.getDepartment() == dep)
+                    .collect(Collectors.toList()));
         }
-        Employee e = new Employee(lastName, firstName);
-        employees.put(fullName, e);
-        return e;
+        return l;
     }
 
-    public Employee removeEmployee(String lastName, String firstName) {
-        String fullName = lastName + " " + firstName;
-        Employee e = new Employee(lastName, firstName);
-        if (employees.containsKey(fullName)) {
-            employees.remove(fullName);
-            return e;
-        }
-        throw new EmployeeNotFoundException();
+    public List<Employee> findMinSalary (int departmentId) {
+        List<Double> min =  empDepartExtract(departmentId).stream()
+                .map(e -> e.getSalary())
+                .collect(Collectors.toList());
+        return employees.stream().filter(e -> e.getSalary() == Collections.min(min)).collect(Collectors.toList());
     }
-
-    public Employee findEmployee(String lastName, String firstName) {
-        String fullName = lastName + " " + firstName;
-        Employee e = new Employee(lastName, firstName);
-        if (employees.containsKey(fullName)) {
-            return e;
-        }
-        throw new EmployeeNotFoundException();
+    public List<Employee> findMaxSalary (int departmentId) {
+        List<Double> max =  empDepartExtract(departmentId).stream()
+                .map(e -> e.getSalary())
+                .collect(Collectors.toList());
+        return employees.stream().filter(e -> e.getSalary() == Collections.max(max)).collect(Collectors.toList());
     }
-
-    public Collection<Employee> returnAll() {
-        return employees.values();
-    }
-
-}
+ }
 
