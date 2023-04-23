@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class EmployeeController {
         return es.empDepartExtract(departmentId);
     }
     @GetMapping ("/all")
-    public Collection<Employee> all () {
+    public HashMap<Integer, List<Employee>> all () {
         return es.printAllByDepart();
     }
 

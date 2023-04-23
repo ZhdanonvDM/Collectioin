@@ -31,33 +31,39 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public List<Employee> printAllByDepart() {
-        List<Employee> l = new ArrayList<>();
+    public HashMap<Integer, List<Employee>> printAllByDepart() {
+/*        List<Employee> l = new ArrayList<>();
         HashSet<Integer> s = new HashSet<>(
                 employees.stream()
                         .map(e -> e.getDepartment())
                         .collect(Collectors.toList())
-                );
-        s.stream().sorted();
-        for (Integer dep : s) {
+                );*/
+        return (HashMap<Integer, List<Employee>>) employees.stream()
+                        .collect(Collectors.groupingBy(employee -> employee.getDepartment(), Collectors.toList()));
+ //       s.stream().sorted();
+/*        for (Integer dep : s) {
             l.addAll(employees.stream()
                     .filter(e -> e.getDepartment() == dep)
                     .collect(Collectors.toList()));
-        }
-        return l;
+        }*/
+//        return l;
     }
 
     public List<Employee> findMinSalary (int departmentId) {
-        List<Double> min =  empDepartExtract(departmentId).stream()
+       Optional<Double> min =
+                empDepartExtract(departmentId).stream()
                 .map(e -> e.getSalary())
+                .min(Comparator.naturalOrder());
+        return employees.stream().filter(e -> min.get() == e.getSalary())
                 .collect(Collectors.toList());
-        return employees.stream().filter(e -> e.getSalary() == Collections.min(min)).collect(Collectors.toList());
     }
     public List<Employee> findMaxSalary (int departmentId) {
-        List<Double> max =  empDepartExtract(departmentId).stream()
-                .map(e -> e.getSalary())
+        Optional<Double> max =
+                empDepartExtract(departmentId).stream()
+                        .map(e -> e.getSalary())
+                        .max(Comparator.naturalOrder());
+        return employees.stream().filter(e -> max.get() == e.getSalary())
                 .collect(Collectors.toList());
-        return employees.stream().filter(e -> e.getSalary() == Collections.max(max)).collect(Collectors.toList());
     }
  }
 
