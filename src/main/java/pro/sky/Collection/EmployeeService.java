@@ -1,5 +1,6 @@
 package pro.sky.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pro.sky.Collection.exception.EmployeeAlreadyAddedException;
 import pro.sky.Collection.exception.EmployeeNotFoundException;
@@ -27,31 +28,41 @@ public class EmployeeService {
 
     public Employee addEmployee (String lastName, String firstName) {
         for (Employee employee : employees) {
-            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+            if (StringUtils.equalsIgnoreCase(employee.getLastName(), lastName) && StringUtils.equalsIgnoreCase(employee.getFirstName(), firstName)) {
                 throw new EmployeeAlreadyAddedException();
             }
+/*            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                throw new EmployeeAlreadyAddedException();
+            }*/
         }
         if (employees.size()>100) {
             throw new EmployeeStorageIsFullException();
         }
-        Employee e = new Employee(lastName, firstName);
+        Employee e = new Employee(StringUtils.capitalize(lastName), StringUtils.capitalize(firstName));
         employees.add(e);
         return e;
     }
     public Employee removeEmployee (String lastName, String firstName) {
         for (Employee employee : employees) {
-            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+            if (StringUtils.equalsIgnoreCase(employee.getLastName(), lastName) && StringUtils.equalsIgnoreCase(employee.getFirstName(), firstName)) {
                 employees.remove(employee);
                 return employee;
             }
+/*            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                employees.remove(employee);
+                return employee;
+            }*/
         }
         throw new EmployeeNotFoundException();
     }
     public Employee findEmployee (String lastName, String firstName) {
         for (Employee employee : employees) {
-            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+            if (StringUtils.equalsIgnoreCase(employee.getLastName(), lastName) && StringUtils.equalsIgnoreCase(employee.getFirstName(), firstName)) {
                 return employee;
             }
+/*            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                return employee;
+            }*/
         }
         throw new EmployeeNotFoundException();
     }
