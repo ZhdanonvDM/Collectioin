@@ -1,9 +1,15 @@
 package pro.sky.Collection;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import pro.sky.Collection.exception.EmployeeAlreadyAddedException;
+import pro.sky.Collection.exception.EmployeeNotFoundException;
+import pro.sky.Collection.exception.EmployeeStorageIsFullException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+@Service
 public class EmployeeService {
     private List<Employee> employees = new ArrayList<> (
             List.of(
@@ -20,17 +26,49 @@ public class EmployeeService {
             )
     );
 
-    public void addEmployee (String lastName, String firstName) {
-        Employee employee = new Employee(lastName, firstName);
-        employees.add(employee);
+    public Employee addEmployee (String lastName, String firstName) {
+        for (Employee employee : employees) {
+            if (StringUtils.equalsIgnoreCase(employee.getLastName(), lastName) && StringUtils.equalsIgnoreCase(employee.getFirstName(), firstName)) {
+                throw new EmployeeAlreadyAddedException();
+            }
+/*            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                throw new EmployeeAlreadyAddedException();
+            }*/
+        }
+        if (employees.size()>100) {
+            throw new EmployeeStorageIsFullException();
+        }
+        Employee e = new Employee(StringUtils.capitalize(lastName), StringUtils.capitalize(firstName));
+        employees.add(e);
+        return e;
     }
-    public void removeEmployee (String lastName, String firstName) {
-        Employee employee = new Employee(lastName, firstName);
-        employees.remove(employee);
+    public Employee removeEmployee (String lastName, String firstName) {
+        for (Employee employee : employees) {
+            if (StringUtils.equalsIgnoreCase(employee.getLastName(), lastName) && StringUtils.equalsIgnoreCase(employee.getFirstName(), firstName)) {
+                employees.remove(employee);
+                return employee;
+            }
+/*            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                employees.remove(employee);
+                return employee;
+            }*/
+        }
+        throw new EmployeeNotFoundException();
     }
-    public void findEmployee (String lastName, String firstName) {
-        Employee employee = new Employee(lastName, firstName);
-        employees.contains(employee);
+    public Employee findEmployee (String lastName, String firstName) {
+        for (Employee employee : employees) {
+            if (StringUtils.equalsIgnoreCase(employee.getLastName(), lastName) && StringUtils.equalsIgnoreCase(employee.getFirstName(), firstName)) {
+                return employee;
+            }
+/*            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                return employee;
+            }*/
+        }
+        throw new EmployeeNotFoundException();
     }
+    public Collection<Employee> returnAll() {
+        return employees;
+    }
+
 }
 
