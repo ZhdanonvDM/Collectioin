@@ -1,5 +1,6 @@
 package pro.sky.Collection;
 
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import pro.sky.Collection.exception.EmployeeAlreadyAddedException;
 import pro.sky.Collection.exception.EmployeeNotFoundException;
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-@Service
+@Repository
 public class EmployeeService {
     private List<Employee> employees = new ArrayList<>(
             List.of(new Employee("Ivanov", "Ivan", 1, 10000),
@@ -25,45 +26,45 @@ public class EmployeeService {
                     new Employee("Degtyarev", "Ivan", 5, 632858)
             ));
 
-    public List<Employee> empDepartExtract(int departmentId) {
-        return employees.stream()
-                .filter(e -> e.getDepartment() == departmentId)
-                .collect(Collectors.toList());
+    public Employee addEmployee (String lastName, String firstName, int department, double salary) {
+        for (Employee employee : employees) {
+            if (employee.getLastName().equals(lastName) &&
+                    employee.getFirstName().equals(firstName) &&
+                    employee.getDepartment() == department &&
+                    employee.getSalary() == salary
+            ) {
+                throw new EmployeeAlreadyAddedException();
+            }
+        }
+        Employee e = new Employee(lastName, firstName, department, salary);
+        employees.add(e);
+        return e;
+    }
+    public Employee removeEmployee (String lastName, String firstName, int department, double salary) {
+        for (Employee employee : employees) {
+            if (employee.getLastName().equals(lastName) &&
+                    employee.getFirstName().equals(firstName) &&
+                    employee.getDepartment() == department &&
+                    employee.getSalary() == salary
+            ) {
+                employees.remove(employee);
+                return employee;
+            }
+        }
+        throw new EmployeeNotFoundException();
+    }
+    public Employee findEmployee (String lastName, String firstName) {
+        for (Employee employee : employees) {
+            if (employee.getLastName().equals(lastName) && employee.getFirstName().equals(firstName)) {
+                return employee;
+            }
+        }
+        throw new EmployeeNotFoundException();
     }
 
-    public HashMap<Integer, List<Employee>> printAllByDepart() {
-/*        List<Employee> l = new ArrayList<>();
-        HashSet<Integer> s = new HashSet<>(
-                employees.stream()
-                        .map(e -> e.getDepartment())
-                        .collect(Collectors.toList())
-                );*/
-        return (HashMap<Integer, List<Employee>>) employees.stream()
-                        .collect(Collectors.groupingBy(employee -> employee.getDepartment(), Collectors.toList()));
- //       s.stream().sorted();
-/*        for (Integer dep : s) {
-            l.addAll(employees.stream()
-                    .filter(e -> e.getDepartment() == dep)
-                    .collect(Collectors.toList()));
-        }*/
-//        return l;
+    public Collection<Employee> returnAll() {
+        return employees;
     }
 
-    public List<Employee> findMinSalary (int departmentId) {
-       Optional<Double> min =
-                empDepartExtract(departmentId).stream()
-                .map(e -> e.getSalary())
-                .min(Comparator.naturalOrder());
-        return employees.stream().filter(e -> min.get() == e.getSalary())
-                .collect(Collectors.toList());
-    }
-    public List<Employee> findMaxSalary (int departmentId) {
-        Optional<Double> max =
-                empDepartExtract(departmentId).stream()
-                        .map(e -> e.getSalary())
-                        .max(Comparator.naturalOrder());
-        return employees.stream().filter(e -> max.get() == e.getSalary())
-                .collect(Collectors.toList());
-    }
  }
 
